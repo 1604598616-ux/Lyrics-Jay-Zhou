@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>周杰伦歌词本</title>
+  
+  <!-- PWA 元数据 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Jay歌词">
+  <link rel="apple-touch-icon" href="专辑封面/魔杰座-2008.webp">
+  <link rel="manifest" href="manifest.json">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 流动氛围背景 -->
+  <div class="ambient-bg">
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- 头部栏 -->
+    <header>
+      <h1 id="header-title">周杰伦歌词本</h1>
+      <div class="header-action" style="display: flex; align-items: center;">
+        <!-- 可以在这里加个简单的离线徽章或右上角功能 -->
+      </div>
+    </header>
+
+    <!-- Tab 1: 专辑页面 -->
+    <main id="tab-albums" class="tab-content active">
+      <div class="albums-grid" id="albums-container">
+        <!-- 动态生成专辑卡片 -->
+      </div>
+    </main>
+
+    <!-- Tab 2: 检索页面 -->
+    <main id="tab-search" class="tab-content">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" class="search-input" placeholder="检索专辑、歌曲、歌词..." autocomplete="off">
+          <button id="clear-search-btn" class="clear-search-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+        
+        <div class="search-filters">
+          <div class="filter-row">
+            <button class="filter-btn active" data-type="all">全部</button>
+            <button class="filter-btn" data-type="album">专辑</button>
+            <button class="filter-btn" data-type="song">歌名</button>
+            <button class="filter-btn" data-type="lyric">歌词</button>
+            
+            <label class="switch-label">
+              <input type="checkbox" id="exact-match-switch" class="switch-input">
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+              <span>精准匹配</span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div id="search-results-summary" class="search-results-info" style="display: none;"></div>
+      
+      <div id="search-results-container">
+        <!-- 搜索结果分类展示 -->
+        <div class="empty-state" id="search-empty-state" style="justify-content: flex-start; padding-top: 10px; gap: 16px;">
+          <!-- 历史记录 -->
+          <div class="suggestion-section" id="history-section" style="display: none; width: 100%; text-align: left;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px; display: flex; justify-content: space-between;">
+              <span>历史搜索</span>
+              <span id="clear-history-btn" style="color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: normal;">清空</span>
+            </div>
+            <div id="history-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+          </div>
+          
+          <!-- 大家都在搜 -->
+          <div class="suggestion-section" style="width: 100%; text-align: left;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px;">推荐词</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="suggestions-list">
+              <span class="tag-item" data-query="晴天">晴天</span>
+              <span class="tag-item" data-query="夜曲">夜曲</span>
+              <span class="tag-item" data-query="七里香">七里香</span>
+              <span class="tag-item" data-query="枫叶">枫叶</span>
+              <span class="tag-item" data-query="肖邦">肖邦</span>
+              <span class="tag-item" data-query="回忆">回忆</span>
+              <span class="tag-item" data-query="徘徊">徘徊</span>
+              <span class="tag-item" data-query="思念">思念</span>
+            </div>
+          </div>
+          
+          <div style="margin: 20px auto 10px auto; text-align: center; color: var(--text-muted);">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; stroke: var(--text-muted); margin-bottom: 8px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <div class="empty-title" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">输入关键词检索</div>
+            <div class="empty-desc" style="font-size: 11px; color: var(--text-muted);">支持全拼/首字母、多词空格模糊检索</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Tab 3: 收藏页面 -->
+    <main id="tab-favorites" class="tab-content">
+      <div class="song-list" id="favorites-container">
+        <!-- 动态生成收藏列表 -->
+      </div>
+      <div class="empty-state" id="favorites-empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <div class="empty-title">暂无收藏歌曲</div>
+        <div class="empty-desc">在歌曲列表中点击心形图标即可收藏</div>
+      </div>
+    </main>
+
+    <!-- 底部 Tab 导航栏 -->
+    <nav class="tab-bar">
+      <a href="#" class="tab-item active" data-tab="albums">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+        <span>专辑</span>
+      </a>
+      <a href="#" class="tab-item" data-tab="search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span>检索</span>
+      </a>
+      <a href="#" class="tab-item" data-tab="favorites">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <span>收藏</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- 滑出式面板：专辑详情页 -->
+  <div id="album-panel" class="slide-panel">
+    <div class="panel-header">
+      <button class="back-btn" id="album-back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      </button>
+      <div class="panel-title" id="album-panel-title">专辑详情</div>
+    </div>
+    <div class="panel-content">
+      <div class="album-detail-intro">
+        <img class="album-detail-cover" id="album-detail-cover" src="" alt="封面">
+        <div class="album-detail-meta">
+          <div class="album-detail-name" id="album-detail-name"></div>
+          <div class="album-detail-desc" id="album-detail-desc"></div>
+        </div>
+      </div>
+      <div class="song-list" id="album-songs-container">
+        <!-- 专辑歌曲列表 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 滑出式面板：歌词详情页 -->
+  <div id="song-panel" class="song-panel">
+    <div class="song-backdrop" id="song-backdrop"></div>
+    <div class="song-header">
+      <button class="back-btn" id="song-back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="song-header-info">
+        <div class="song-header-title" id="song-header-title">歌名</div>
+        <div class="song-header-album" id="song-header-album">专辑</div>
+      </div>
+      <button class="song-action-btn fav" id="song-fav-btn" style="background-color:rgba(255,255,255,0.08); width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+      </button>
+    </div>
+
+    <!-- CD唱片区域 -->
+    <div class="cd-section" id="cd-section">
+      <div class="cd-disc" id="cd-disc">
+        <img class="cd-cover" id="song-cd-cover" src="" alt="封面">
+      </div>
+    </div>
+
+    <!-- 完整歌词滚动区 -->
+    <div class="lyrics-container" id="lyrics-container">
+      <div class="lyrics-wrapper" id="lyrics-wrapper">
+        <!-- 歌词行 -->
+      </div>
+    </div>
+
+    <!-- 歌词底栏工具栏 -->
+    <div class="lyrics-toolbar" id="lyrics-toolbar">
+      <button class="toolbar-btn btn-secondary" id="song-share-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        生成歌词卡片
+      </button>
+      <button class="toolbar-btn btn-primary" id="toggle-cd-btn">
+        隐藏唱片
+      </button>
+    </div>
+  </div>
+
+  <!-- 分享海报模态框 -->
+  <div class="share-modal" id="share-modal">
+    <div class="poster-card">
+      <div class="poster-canvas-container" id="poster-area">
+        <!-- 海报渲染区域 -->
+        <div class="poster-content">
+          <div class="poster-header">
+            <img class="poster-album-cover" id="poster-cover" src="" alt="封面">
+            <div class="poster-meta">
+              <div class="poster-song-name" id="poster-song-name"></div>
+              <div class="poster-artist">歌手：周杰伦</div>
+            </div>
+          </div>
+          <div class="poster-lyrics" id="poster-lyrics-container">
+            <!-- 选中的歌词 -->
+          </div>
+          <div class="poster-footer">
+            <div class="poster-logo">JAY CHOU LYRICS</div>
+            <div>长按屏幕截图分享</div>
+          </div>
+        </div>
+      </div>
+      <div class="poster-actions">
+        <button class="poster-action-btn cancel" id="poster-cancel-btn">取消</button>
+        <button class="poster-action-btn download" id="poster-copy-btn">保存/复制卡片</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示弹窗 (Toast) -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 歌词数据 -->
+  <script src="lyrics-data.js?v=20260529_03"></script>
+  <!-- 主交互逻辑 -->
+  <script src="app.js?v=20260529_03"></script>
+  <!-- 强制注销 Service Worker 并清空缓存，防止测试时缓存旧的 buggy 代码，引入 sessionStorage 锁与 try-catch 保护以防在 file:// 协议下抛出 SecurityError 崩溃 -->
+  <script>
+    try {
+      if ('serviceWorker' in navigator) {
+        let isCleared = false;
+        try {
+          isCleared = sessionStorage.getItem('sw_cleared');
+        } catch (storageErr) {
+          console.warn('sessionStorage is blocked under current protocol/settings:', storageErr);
+        }
+
+        if (!isCleared) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            if (registrations && registrations.length > 0) {
+              let promises = [];
+              for (let registration of registrations) {
+                promises.push(registration.unregister());
+              }
+              Promise.all(promises).then(function() {
+                console.log('所有旧 Service Worker 注销成功');
+                try {
+                  sessionStorage.setItem('sw_cleared', 'true');
+                } catch(e) {}
+                
+                if (window.caches) {
+                  try {
+                    caches.keys().then(function(names) {
+                      return Promise.all(names.map(name => caches.delete(name)));
+                    }).then(function() {
+                      window.location.reload();
+                    }).catch(function() {
+                      window.location.reload();
+                    });
+                  } catch(e) {
+                    window.location.reload();
+                  }
+                } else {
+                  window.location.reload();
+                }
+              });
+            }
+          });
+        }
+      }
+    } catch(err) {
+      console.warn('PWA clean up process skipped:', err);
+    }
+  </script>
+</body>
+</html>
