@@ -113,6 +113,9 @@ function initData() {
         const songObj = {
           id: songId,
           name: song.name,
+          singer: song.singer || "周杰伦",
+          composer: song.composer || "周杰伦",
+          lyricist: song.lyricist || "周杰伦",
           songLrc: song.songLrc || [],
           pinyinName: getPinyinInitials(song.name), // 提取拼音首字母用于搜索
           albumName: album.name,
@@ -394,10 +397,20 @@ function initDOMEvents() {
   });
 
   // 精准匹配开关监听
-  document.getElementById('exact-match-switch').addEventListener('change', (e) => {
-    state.isExactMatch = e.target.checked;
-    performSearch(searchInput.value.trim());
-  });
+  const exactMatchSwitch = document.getElementById('exact-match-switch');
+  if (exactMatchSwitch) {
+    exactMatchSwitch.addEventListener('change', (e) => {
+      try {
+        state.isExactMatch = e.target.checked;
+        const searchInputEl = document.getElementById('search-input');
+        const queryVal = searchInputEl ? searchInputEl.value.trim() : '';
+        performSearch(queryVal);
+      } catch (err) {
+        alert("开关切换出错: " + err.message + "\n" + err.stack);
+        console.error("Exact match change error:", err);
+      }
+    });
+  }
 
   // 侧滑关闭面板手势适配 (iOS Safari 体验增强)
   setupSwipeToClose('album-panel', 'right');
@@ -534,6 +547,10 @@ function openSongLyrics(song, highlightKeyword = '') {
 
   document.getElementById('song-header-title').textContent = song.name;
   document.getElementById('song-header-album').textContent = `专辑：《${song.albumName}》 (${song.year})`;
+  const creditsEl = document.getElementById('song-header-credits');
+  if (creditsEl) {
+    creditsEl.textContent = `歌手：${song.singer || '周杰伦'}  |  词：${song.lyricist || '周杰伦'}  |  曲：${song.composer || '周杰伦'}`;
+  }
   document.getElementById('song-cd-cover').src = encodeURI(song.cover);
   
   // 设置背景模糊氛围
@@ -633,184 +650,196 @@ function toggleSelectLyricLine(element, lineContent) {
 
 // 8. 检索功能模块（模糊匹配和精准匹配）
 function performSearch(query) {
-  const container = document.getElementById('search-results-container');
-  const summary = document.getElementById('search-results-summary');
-  const emptyState = document.getElementById('search-empty-state');
+  try {
+    const container = document.getElementById('search-results-container');
+    const summary = document.getElementById('search-results-summary');
+    const emptyState = document.getElementById('search-empty-state');
 
-  if (!query) {
-    container.innerHTML = '';
-    summary.style.display = 'none';
-    emptyState.style.display = 'flex';
-    renderHistory(); // 展现历史搜索
-    return;
-  }
-
-  emptyState.style.display = 'none';
-  container.innerHTML = '';
-
-  const type = state.currentSearchType;
-  const isExact = state.isExactMatch;
-
-  // 匹配规则函数，支持拼音检索
-  const matchString = (target, searchStr, pinyinTarget = '') => {
-    if (target === undefined || target === null) return false;
-    const cleanTarget = String(target).toLowerCase();
-    const cleanSearch = String(searchStr).toLowerCase();
-    const cleanPinyin = String(pinyinTarget).toLowerCase();
-    
-    if (isExact) {
-      return cleanTarget === cleanSearch || (cleanPinyin && cleanPinyin === cleanSearch);
-    } else {
-      // 模糊检索：支持空格分词多重过滤
-      const keywords = cleanSearch.split(/\s+/).filter(k => k.length > 0);
-      if (keywords.length === 0) return false;
-      return keywords.every(kw => cleanTarget.includes(kw) || (cleanPinyin && cleanPinyin.includes(kw)));
+    if (!container) {
+      console.warn("search-results-container DOM element is not ready yet.");
+      return;
     }
-  };
 
-  let matchedAlbums = [];
-  let matchedSongs = [];
-  let matchedLyrics = []; // [{song: songObj, lines: [{text: '...', index: 0}]}]
+    if (!query) {
+      container.innerHTML = '';
+      if (summary) summary.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'flex';
+      renderHistory(); // 展现历史搜索
+      return;
+    }
 
-  // [1] 专辑检索
-  if (type === 'all' || type === 'album') {
-    matchedAlbums = state.albums.filter(album => matchString(album.name, query));
-  }
+    if (emptyState) emptyState.style.display = 'none';
+    container.innerHTML = '';
 
-  // [2] 歌曲名检索（传入拼音辅助匹配）
-  if (type === 'all' || type === 'song') {
-    matchedSongs = state.flatSongs.filter(song => matchString(song.name, query, song.pinyinName));
-  }
+    const type = state.currentSearchType;
+    const isExact = state.isExactMatch;
 
-  // [3] 歌词内容检索
-  if (type === 'all' || type === 'lyric') {
-    state.flatSongs.forEach(song => {
-      const matchingLines = [];
-      song.songLrc.forEach((line, index) => {
-        if (matchString(line, query)) {
-          matchingLines.push({ text: line, index });
+    // 匹配规则函数，支持拼音检索
+    const matchString = (target, searchStr, pinyinTarget = '') => {
+      if (target === undefined || target === null) return false;
+      const cleanTarget = String(target).toLowerCase();
+      const cleanSearch = String(searchStr).toLowerCase();
+      const cleanPinyin = String(pinyinTarget).toLowerCase();
+      
+      if (isExact) {
+        return cleanTarget === cleanSearch || (cleanPinyin && cleanPinyin === cleanSearch);
+      } else {
+        // 模糊检索：支持空格分词多重过滤
+        const keywords = cleanSearch.split(/\s+/).filter(k => k.length > 0);
+        if (keywords.length === 0) return false;
+        return keywords.every(kw => cleanTarget.includes(kw) || (cleanPinyin && cleanPinyin.includes(kw)));
+      }
+    };
+
+    let matchedAlbums = [];
+    let matchedSongs = [];
+    let matchedLyrics = []; // [{song: songObj, lines: [{text: '...', index: 0}]}]
+
+    // [1] 专辑检索
+    if (type === 'all' || type === 'album') {
+      matchedAlbums = state.albums.filter(album => matchString(album.name, query));
+    }
+
+    // [2] 歌曲名检索（传入拼音辅助匹配）
+    if (type === 'all' || type === 'song') {
+      matchedSongs = state.flatSongs.filter(song => matchString(song.name, query, song.pinyinName));
+    }
+
+    // [3] 歌词内容检索
+    if (type === 'all' || type === 'lyric') {
+      state.flatSongs.forEach(song => {
+        const matchingLines = [];
+        song.songLrc.forEach((line, index) => {
+          if (matchString(line, query)) {
+            matchingLines.push({ text: line, index });
+          }
+        });
+        if (matchingLines.length > 0) {
+          matchedLyrics.push({
+            song: song,
+            lines: matchingLines
+          });
         }
       });
-      if (matchingLines.length > 0) {
-        matchedLyrics.push({
-          song: song,
-          lines: matchingLines
-        });
-      }
-    });
-  }
+    }
 
-  let totalCount = matchedAlbums.length + matchedSongs.length + matchedLyrics.reduce((acc, curr) => acc + curr.lines.length, 0);
-  summary.textContent = `找到约 ${totalCount} 条匹配结果`;
-  summary.style.display = 'block';
+    let totalCount = matchedAlbums.length + matchedSongs.length + matchedLyrics.reduce((acc, curr) => acc + curr.lines.length, 0);
+    if (summary) {
+      summary.textContent = `找到约 ${totalCount} 条匹配结果`;
+      summary.style.display = 'block';
+    }
 
-  // 渲染结果
-  // (A) 渲染匹配的专辑
-  if (matchedAlbums.length > 0) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'search-result-group';
-    groupDiv.innerHTML = `<div class="search-result-header">匹配的专辑 (${matchedAlbums.length})</div>`;
-    
-    matchedAlbums.forEach(album => {
-      const card = document.createElement('div');
-      card.className = 'search-result-card';
-      card.innerHTML = `
-        <div class="search-result-title">
-          <span>《${highlightText(album.name, query)}》</span>
-          <span style="font-size:12px; color:var(--accent-color)">${album.year}</span>
-        </div>
-        <div class="search-result-meta">
-          <span>共 ${album.songs.length} 首歌曲</span>
-        </div>
-      `;
-      card.addEventListener('click', () => {
-        saveSearchHistory(query); // 记录搜索词
-        openAlbumDetail(album);
-      });
-      groupDiv.appendChild(card);
-    });
-    container.appendChild(groupDiv);
-  }
-
-  // (B) 渲染匹配的歌名
-  if (matchedSongs.length > 0) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'search-result-group';
-    groupDiv.innerHTML = `<div class="search-result-header">匹配的歌曲 (${matchedSongs.length})</div>`;
-
-    matchedSongs.forEach(song => {
-      const card = document.createElement('div');
-      card.className = 'search-result-card';
-      card.innerHTML = `
-        <div class="search-result-title">${highlightText(song.name, query)}</div>
-        <div class="search-result-meta">
-          <span>专辑：${song.albumName}</span>
-          <span>•</span>
-          <span>年份：${song.year}</span>
-        </div>
-      `;
-      card.addEventListener('click', () => {
-        saveSearchHistory(query); // 记录搜索词
-        openSongLyrics(song);
-      });
-      groupDiv.appendChild(card);
-    });
-    container.appendChild(groupDiv);
-  }
-
-  // (C) 渲染匹配的歌词
-  if (matchedLyrics.length > 0) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'search-result-group';
-    groupDiv.innerHTML = `<div class="search-result-header">匹配的歌词 (${matchedLyrics.length} 首歌曲中包含)</div>`;
-
-    matchedLyrics.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'search-result-card';
+    // 渲染结果
+    // (A) 渲染匹配的专辑
+    if (matchedAlbums.length > 0) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'search-result-group';
+      groupDiv.innerHTML = `<div class="search-result-header">匹配的专辑 (${matchedAlbums.length})</div>`;
       
-      let linesHtml = '';
-      const displayLines = item.lines.slice(0, 3);
-      displayLines.forEach(line => {
-        linesHtml += `
-          <div class="matched-lyric-line">
-            “ ${highlightText(line.text, query)} ”
+      matchedAlbums.forEach(album => {
+        const card = document.createElement('div');
+        card.className = 'search-result-card';
+        card.innerHTML = `
+          <div class="search-result-title">
+            <span>《${highlightText(album.name, query)}》</span>
+            <span style="font-size:12px; color:var(--accent-color)">${album.year}</span>
+          </div>
+          <div class="search-result-meta">
+            <span>共 ${album.songs.length} 首歌曲</span>
           </div>
         `;
+        card.addEventListener('click', () => {
+          saveSearchHistory(query); // 记录搜索词
+          openAlbumDetail(album);
+        });
+        groupDiv.appendChild(card);
       });
+      container.appendChild(groupDiv);
+    }
 
-      if (item.lines.length > 3) {
-        linesHtml += `<div style="font-size:11px; color:var(--text-muted); padding-left:6px; margin-top:2px;">还有其他 ${item.lines.length - 3} 处匹配...</div>`;
-      }
+    // (B) 渲染匹配的歌名
+    if (matchedSongs.length > 0) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'search-result-group';
+      groupDiv.innerHTML = `<div class="search-result-header">匹配的歌曲 (${matchedSongs.length})</div>`;
 
-      card.innerHTML = `
-        <div class="search-result-title">
-          <span>${item.song.name}</span>
-          <span style="font-size:11px; font-weight:normal; color:var(--text-secondary)">${item.song.albumName}</span>
-        </div>
-        <div class="matched-lyrics">
-          ${linesHtml}
-        </div>
+      matchedSongs.forEach(song => {
+        const card = document.createElement('div');
+        card.className = 'search-result-card';
+        card.innerHTML = `
+          <div class="search-result-title">${highlightText(song.name, query)}</div>
+          <div class="search-result-meta">
+            <span>专辑：${song.albumName}</span>
+            <span>•</span>
+            <span>年份：${song.year}</span>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          saveSearchHistory(query); // 记录搜索词
+          openSongLyrics(song);
+        });
+        groupDiv.appendChild(card);
+      });
+      container.appendChild(groupDiv);
+    }
+
+    // (C) 渲染匹配的歌词
+    if (matchedLyrics.length > 0) {
+      const groupDiv = document.createElement('div');
+      groupDiv.className = 'search-result-group';
+      groupDiv.innerHTML = `<div class="search-result-header">匹配的歌词 (${matchedLyrics.length} 首歌曲中包含)</div>`;
+
+      matchedLyrics.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'search-result-card';
+        
+        let linesHtml = '';
+        const displayLines = item.lines.slice(0, 3);
+        displayLines.forEach(line => {
+          linesHtml += `
+            <div class="matched-lyric-line">
+              “ ${highlightText(line.text, query)} ”
+            </div>
+          `;
+        });
+
+        if (item.lines.length > 3) {
+          linesHtml += `<div style="font-size:11px; color:var(--text-muted); padding-left:6px; margin-top:2px;">还有其他 ${item.lines.length - 3} 处匹配...</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="search-result-title">
+            <span>${item.song.name}</span>
+            <span style="font-size:11px; font-weight:normal; color:var(--text-secondary)">${item.song.albumName}</span>
+          </div>
+          <div class="matched-lyrics">
+            ${linesHtml}
+          </div>
+        `;
+        
+        card.addEventListener('click', () => {
+          saveSearchHistory(query); // 记录搜索词
+          openSongLyrics(item.song, query);
+        });
+        groupDiv.appendChild(card);
+      });
+      container.appendChild(groupDiv);
+    }
+
+    // 无结果展示
+    if (totalCount === 0) {
+      const noResult = document.createElement('div');
+      noResult.className = 'empty-state';
+      noResult.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <div class="empty-title">无匹配结果</div>
+        <div class="empty-desc">换个词再试一下吧</div>
       `;
-      
-      card.addEventListener('click', () => {
-        saveSearchHistory(query); // 记录搜索词
-        openSongLyrics(item.song, query);
-      });
-      groupDiv.appendChild(card);
-    });
-    container.appendChild(groupDiv);
-  }
-
-  // 无结果展示
-  if (totalCount === 0) {
-    const noResult = document.createElement('div');
-    noResult.className = 'empty-state';
-    noResult.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-      <div class="empty-title">无匹配结果</div>
-      <div class="empty-desc">换个词再试一下吧</div>
-    `;
-    container.appendChild(noResult);
+      container.appendChild(noResult);
+    }
+  } catch (err) {
+    alert("搜索执行出错: " + err.message + "\n" + err.stack);
+    console.error("搜索执行出错:", err);
   }
 }
 
@@ -931,6 +960,11 @@ function openShareModal() {
 function renderPosterToCanvas() {
   const song = state.currentSong;
   const lyrics = state.selectedLyrics;
+  const posterArea = document.getElementById('poster-area');
+
+  const oldImg = document.getElementById('generated-poster-img');
+  if (oldImg) oldImg.remove();
+  posterArea.classList.remove('has-generated');
   
   // 创建 Canvas
   const canvas = document.createElement('canvas');
@@ -955,12 +989,15 @@ function renderPosterToCanvas() {
   coverImg.src = song.cover;
   
   coverImg.onload = () => {
-    // 绘制高斯模糊背景
+    // 绘制封面背景氛围（提高透明度至 0.45，确保暗色封面细节可见）
     ctx.save();
-    ctx.globalAlpha = 0.2;
-    // 缩放并居中画图
-    ctx.drawImage(coverImg, -50, -50, width + 100, height + 100);
+    ctx.globalAlpha = 0.45;
+    drawImageCover(ctx, coverImg, -50, -50, width + 100, height + 100);
     ctx.restore();
+
+    // 在其上叠加一层 75% 不透明度的暗夜色，压低亮度，使其既显露轮廓又保持高级感
+    ctx.fillStyle = 'rgba(18, 18, 21, 0.75)';
+    ctx.fillRect(0, 0, width, height);
 
     // 绘制磨砂玻璃边框
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
@@ -994,11 +1031,12 @@ function renderPosterToCanvas() {
     // 4. 绘制歌曲、歌手及专辑文本信息
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif';
-    ctx.fillText(song.name, 160, 80);
+    ctx.fillText(song.name, 160, 72);
     
     ctx.fillStyle = '#9898a0';
-    ctx.font = '20px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillText(`歌手：周杰伦   专辑：《${song.albumName}》`, 160, 120);
+    ctx.font = '18px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText(`专辑：《${song.albumName}》 (${song.year})`, 160, 102);
+    ctx.fillText(`歌手：${song.singer || '周杰伦'}   词：${song.lyricist || '周杰伦'}   曲：${song.composer || '周杰伦'}`, 160, 130);
 
     // 5. 绘制分割装饰线
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
@@ -1039,33 +1077,36 @@ function renderPosterToCanvas() {
     ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.fillText('JAY CHOU LYRICS', 40, height - 40);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.font = '18px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText('长按图片保存至相册', width - 40, height - 42);
-    ctx.textAlign = 'left'; // 还原对齐
-
     // 8. 核心步骤：将 Canvas 转成 Base64 Image 并覆盖在卡片容器上，供 iOS 原生长按下载！
     const imgDataUrl = canvas.toDataURL('image/png');
     
-    // 清除海报卡片上的旧图片，生成一个新图
-    const oldImg = document.getElementById('generated-poster-img');
-    if (oldImg) oldImg.remove();
-
     const generatedImg = document.createElement('img');
     generatedImg.id = 'generated-poster-img';
     generatedImg.src = imgDataUrl;
     generatedImg.style.width = '100%';
-    generatedImg.style.borderRadius = '24px';
-    generatedImg.style.position = 'absolute';
-    generatedImg.style.top = '0';
-    generatedImg.style.left = '0';
-    generatedImg.style.zIndex = '10';
-    generatedImg.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+    generatedImg.style.height = 'auto';
+    generatedImg.style.display = 'block';
     generatedImg.style.pointerEvents = 'auto'; // 关键：允许用户交互长按！
 
-    document.getElementById('poster-area').appendChild(generatedImg);
+    posterArea.classList.add('has-generated');
+    posterArea.appendChild(generatedImg);
   };
+}
+
+function drawImageCover(ctx, img, x, y, width, height) {
+  try {
+    const imgWidth = img.naturalWidth || img.width || 300;
+    const imgHeight = img.naturalHeight || img.height || 300;
+    const scale = Math.max(width / imgWidth, height / imgHeight);
+    const drawWidth = imgWidth * scale;
+    const drawHeight = imgHeight * scale;
+    const drawX = x + (width - drawWidth) / 2;
+    const drawY = y + (height - drawHeight) / 2;
+    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+  } catch (e) {
+    console.error("drawImageCover error:", e);
+    ctx.drawImage(img, x, y, width, height);
+  }
 }
 
 function savePosterAsImage() {

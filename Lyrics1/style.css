@@ -40,22 +40,6 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
-.slide-panel {
-  pointer-events: none;
-}
-
-.slide-panel.open {
-  pointer-events: auto;
-}
-
-.song-panel {
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.song-panel.open {
-  pointer-events: auto;
-}
 
 /* 背景流动光影特效 */
 .ambient-bg {
@@ -280,10 +264,12 @@ header h1 {
   transition: transform 0.35s cubic-bezier(0.1, 0.76, 0.55, 0.94);
   display: flex;
   flex-direction: column;
+  pointer-events: none;
 }
 
 .slide-panel.open {
   transform: translateX(0);
+  pointer-events: auto;
 }
 
 .panel-header {
@@ -672,10 +658,13 @@ header h1 {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .song-panel.open {
   transform: translateY(0);
+  pointer-events: auto;
 }
 
 /* 全景歌曲背景图模糊效果 */
@@ -956,6 +945,24 @@ header h1 {
   overflow: hidden;
 }
 
+.poster-canvas-container.has-generated {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  background: none;
+}
+
+.poster-canvas-container.has-generated::before,
+.poster-canvas-container.has-generated .poster-content {
+  display: none;
+}
+
+.poster-canvas-container.has-generated #generated-poster-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 .poster-canvas-container::before {
   content: '';
   position: absolute;
@@ -1116,23 +1123,3 @@ header h1 {
   color: var(--bg-primary);
   border-color: var(--accent-color);
 }
-
-/* 解决绝对/固定定位面板滑出后仍拦截底部Tab-bar点击事件的Bug */
-.slide-panel {
-  pointer-events: none;
-}
-
-.slide-panel.open {
-  pointer-events: auto;
-}
-
-.song-panel {
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.song-panel.open {
-  pointer-events: auto;
-}
-
-
