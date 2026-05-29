@@ -232,7 +232,7 @@
   <script src="lyrics-data.js?v=20260529_03"></script>
   <!-- 主交互逻辑 -->
   <script src="app.js?v=20260529_03"></script>
-  <!-- 强制注销 Service Worker 并清空缓存，防止测试时缓存旧的 buggy 代码，引入 sessionStorage 锁与 try-catch 保护以防在 file:// 协议下抛出 SecurityError 崩溃 -->
+  <!-- 强制注销旧 Service Worker（防缓存残留），并在清理后正常注册最新 Service Worker（实现离线 PWA 支持） -->
   <script>
     try {
       if ('serviceWorker' in navigator) {
@@ -272,12 +272,31 @@
                   window.location.reload();
                 }
               });
+            } else {
+              // 若原本无任何 SW，标记已清理并直接注册
+              try {
+                sessionStorage.setItem('sw_cleared', 'true');
+              } catch(e) {}
+              registerSW();
             }
           });
+        } else {
+          // 已清理缓存，正常注册 Service Worker
+          registerSW();
         }
       }
+
+      function registerSW() {
+        navigator.serviceWorker.register('./sw.js')
+          .then(registration => {
+            console.log('Service Worker 注册成功:', registration.scope);
+          })
+          .catch(err => {
+            console.error('Service Worker 注册失败:', err);
+          });
+      }
     } catch(err) {
-      console.warn('PWA clean up process skipped:', err);
+      console.warn('PWA clean up or registration process skipped:', err);
     }
   </script>
 </body>

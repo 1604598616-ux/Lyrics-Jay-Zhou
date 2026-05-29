@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jay-lyrics-cache-v2';
+const CACHE_NAME = 'jay-lyrics-cache-v3';
 
 // 需要缓存的静态资源列表
 const ASSETS_TO_CACHE = [

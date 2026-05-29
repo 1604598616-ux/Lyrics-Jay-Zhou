@@ -2,19 +2,19 @@
   "name": "周杰伦歌词本",
   "short_name": "Jay歌词",
   "description": "周杰伦经典专辑歌曲与歌词检索本，支持离线搜索与精美歌词卡片分享。",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0a0a0c",
   "theme_color": "#0a0a0c",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "专辑封面/魔杰座-2008.webp",
+      "src": "./专辑封面/魔杰座-2008.webp",
       "sizes": "256x256",
       "type": "image/webp"
     },
     {
-      "src": "专辑封面/范特西-2001.webp",
+      "src": "./专辑封面/范特西-2001.webp",
       "sizes": "256x256",
       "type": "image/webp"
     }
