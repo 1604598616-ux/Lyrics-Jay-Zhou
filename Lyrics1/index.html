@@ -51,10 +51,14 @@
         
         <div class="search-filters">
           <div class="filter-row">
-            <button class="filter-btn active" data-type="all">全部</button>
-            <button class="filter-btn" data-type="album">专辑</button>
-            <button class="filter-btn" data-type="song">歌名</button>
-            <button class="filter-btn" data-type="lyric">歌词</button>
+            <div class="filter-btn-group">
+              <button class="filter-btn active" data-type="all">全部</button>
+              <button class="filter-btn" data-type="album">专辑</button>
+              <button class="filter-btn" data-type="song">歌名</button>
+              <button class="filter-btn" data-type="lyric">歌词</button>
+              <button class="filter-btn" data-type="lyricist">作词</button>
+              <button class="filter-btn" data-type="composer">作曲</button>
+            </div>
             
             <label class="switch-label">
               <input type="checkbox" id="exact-match-switch" class="switch-input">
@@ -67,44 +71,72 @@
       
       <div id="search-results-summary" class="search-results-info" style="display: none;"></div>
       
-      <div id="search-results-container">
-        <!-- 搜索结果分类展示 -->
-        <div class="empty-state" id="search-empty-state" style="justify-content: flex-start; padding-top: 10px; gap: 16px;">
-          <!-- 历史记录 -->
-          <div class="suggestion-section" id="history-section" style="display: none; width: 100%; text-align: left;">
-            <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px; display: flex; justify-content: space-between;">
-              <span>历史搜索</span>
-              <span id="clear-history-btn" style="color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: normal;">清空</span>
-            </div>
-            <div id="history-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+      <!-- 初始默认状态的推荐词与提示 -->
+      <div class="empty-state" id="search-empty-state" style="justify-content: flex-start; padding-top: 10px; gap: 16px;">
+        <!-- 历史记录 -->
+        <div class="suggestion-section" id="history-section" style="display: none; width: 100%; text-align: left;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px; display: flex; justify-content: space-between;">
+            <span>历史搜索</span>
+            <span id="clear-history-btn" style="color: var(--text-muted); cursor: pointer; font-size: 11px; font-weight: normal;">清空</span>
           </div>
-          
-          <!-- 大家都在搜 -->
-          <div class="suggestion-section" style="width: 100%; text-align: left;">
-            <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px;">推荐词</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="suggestions-list">
-              <span class="tag-item" data-query="晴天">晴天</span>
-              <span class="tag-item" data-query="夜曲">夜曲</span>
-              <span class="tag-item" data-query="七里香">七里香</span>
-              <span class="tag-item" data-query="枫叶">枫叶</span>
-              <span class="tag-item" data-query="肖邦">肖邦</span>
-              <span class="tag-item" data-query="回忆">回忆</span>
-              <span class="tag-item" data-query="徘徊">徘徊</span>
-              <span class="tag-item" data-query="思念">思念</span>
-            </div>
-          </div>
-          
-          <div style="margin: 20px auto 10px auto; text-align: center; color: var(--text-muted);">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; stroke: var(--text-muted); margin-bottom: 8px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <div class="empty-title" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">输入关键词检索</div>
-            <div class="empty-desc" style="font-size: 11px; color: var(--text-muted);">支持全拼/首字母、多词空格模糊检索</div>
+          <div id="history-list" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+        </div>
+        
+        <!-- 大家都在搜 -->
+        <div class="suggestion-section" style="width: 100%; text-align: left;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--accent-color); margin-bottom: 10px;">推荐词</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;" id="suggestions-list">
+            <span class="tag-item" data-query="晴天">晴天</span>
+            <span class="tag-item" data-query="夜曲">夜曲</span>
+            <span class="tag-item" data-query="七里香">七里香</span>
+            <span class="tag-item" data-query="枫叶">枫叶</span>
+            <span class="tag-item" data-query="肖邦">肖邦</span>
+            <span class="tag-item" data-query="回忆">回忆</span>
+            <span class="tag-item" data-query="徘徊">徘徊</span>
+            <span class="tag-item" data-query="思念">思念</span>
           </div>
         </div>
+        
+        <div style="margin: 20px auto 10px auto; text-align: center; color: var(--text-muted);">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px; stroke: var(--text-muted); margin-bottom: 8px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <div class="empty-title" style="font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">输入关键词检索</div>
+          <div class="empty-desc" style="font-size: 11px; color: var(--text-muted);">支持全拼/首字母、多词空格模糊检索</div>
+        </div>
+      </div>
+
+      <div id="search-results-container">
+        <!-- 搜索结果分类展示 -->
       </div>
     </main>
 
     <!-- Tab 3: 收藏页面 -->
     <main id="tab-favorites" class="tab-content">
+      <div class="favorites-sort-bar" id="favorites-sort-bar" style="display: none; position: relative;">
+        <span style="font-size:14px; font-weight:700; color:var(--accent-color);">我的收藏</span>
+        <button class="sort-trigger-btn" id="sort-trigger-btn" title="排序方式">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+        </button>
+        
+        <!-- 下拉排序菜单 -->
+        <div class="sort-dropdown-menu" id="sort-dropdown-menu">
+          <div class="sort-dropdown-option active" data-sort="default">
+            <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="option-title">播放列表顺序</span>
+          </div>
+          <div class="sort-dropdown-option" data-sort="time-desc">
+            <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="option-title">最新收藏</span>
+          </div>
+          <div class="sort-dropdown-option" data-sort="time-asc">
+            <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="option-title">最早收藏</span>
+          </div>
+          <div class="sort-dropdown-option" data-sort="album">
+            <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="option-title">按专辑</span>
+          </div>
+        </div>
+      </div>
       <div class="song-list" id="favorites-container">
         <!-- 动态生成收藏列表 -->
       </div>
@@ -166,7 +198,7 @@
         <div class="song-header-album" id="song-header-album">专辑</div>
         <div class="song-header-credits" id="song-header-credits" style="font-size: 11px; color: var(--text-muted); margin-top: 2px;"></div>
       </div>
-      <button class="song-action-btn fav" id="song-fav-btn" style="background-color:rgba(255,255,255,0.08); width:36px; height:36px; display:flex; align-items:center; justify-content:center;">
+      <button class="song-action-btn fav" id="song-fav-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
     </div>
@@ -185,15 +217,34 @@
       </div>
     </div>
 
+    <!-- 悬浮切歌按钮（页面左右侧垂直居中） -->
+    <button class="nav-side-btn prev" id="prev-song-btn" title="上一首">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="nav-side-btn next" id="next-song-btn" title="下一首">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
     <!-- 歌词底栏工具栏 -->
     <div class="lyrics-toolbar" id="lyrics-toolbar">
-      <button class="toolbar-btn btn-secondary" id="song-share-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        生成歌词卡片
-      </button>
-      <button class="toolbar-btn btn-primary" id="toggle-cd-btn">
-        隐藏唱片
-      </button>
+      <div class="toolbar-side left">
+        <button class="toolbar-btn btn-secondary" id="song-share-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          分享歌词
+        </button>
+      </div>
+      <div class="toolbar-center">
+        <div class="font-size-ctrl">
+          <button id="font-dec-btn" class="font-btn" title="减小字号">A-</button>
+          <div class="font-divider"></div>
+          <button id="font-inc-btn" class="font-btn" title="增大字号">A+</button>
+        </div>
+      </div>
+      <div class="toolbar-side right">
+        <button class="toolbar-btn btn-primary" id="toggle-cd-btn">
+          隐藏唱片
+        </button>
+      </div>
     </div>
   </div>
 
@@ -228,10 +279,12 @@
   <!-- 提示弹窗 (Toast) -->
   <div class="toast" id="toast"></div>
 
+
+
   <!-- 歌词数据 -->
-  <script src="lyrics-data.js?v=20260529_03"></script>
+  <script src="lyrics-data.js?v=20260530_1328"></script>
   <!-- 主交互逻辑 -->
-  <script src="app.js?v=20260529_03"></script>
+  <script src="app.js?v=20260530_1328"></script>
   <!-- 强制注销旧 Service Worker（防缓存残留），并在清理后正常注册最新 Service Worker（实现离线 PWA 支持） -->
   <script>
     if ('serviceWorker' in navigator) {

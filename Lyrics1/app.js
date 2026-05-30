@@ -53,6 +53,573 @@ function showGlobalError(errMessage) {
   errDiv.style.display = 'block';
 }
 
+const PINYIN_MAP = {
+  "浪漫手机": {
+    "initials": "lmsj",
+    "full": "langmanshouji"
+  },
+  "方文山": {
+    "initials": "fws",
+    "full": "fangwenshan"
+  },
+  "周杰伦": {
+    "initials": "zjl",
+    "full": "zhoujielun"
+  },
+  "漂移": {
+    "initials": "py",
+    "full": "piaoyi"
+  },
+  "一路向北": {
+    "initials": "ylxb",
+    "full": "yiluxiangbei"
+  },
+  "枫": {
+    "initials": "f",
+    "full": "feng"
+  },
+  "宋健彰": {
+    "initials": "sjz",
+    "full": "songjianzhang"
+  },
+  "黑色毛衣": {
+    "initials": "hsmy",
+    "full": "heisemaoyi"
+  },
+  "麦芽糖": {
+    "initials": "myt",
+    "full": "maiyatang"
+  },
+  "夜曲": {
+    "initials": "yq",
+    "full": "yequ"
+  },
+  "发如雪": {
+    "initials": "frx",
+    "full": "faruxue"
+  },
+  "蓝色风暴": {
+    "initials": "lsfb",
+    "full": "lansefengbao"
+  },
+  "珊瑚海": {
+    "initials": "shh",
+    "full": "shanhuhai"
+  },
+  "四面楚歌": {
+    "initials": "smcg",
+    "full": "simianchuge"
+  },
+  "逆鳞": {
+    "initials": "nl",
+    "full": "nilin"
+  },
+  "黄俊郎": {
+    "initials": "hjl",
+    "full": "huangjunlang"
+  },
+  "东风破": {
+    "initials": "dfp",
+    "full": "dongfengpo"
+  },
+  "三年二班": {
+    "initials": "sneb",
+    "full": "sannianerban"
+  },
+  "晴天": {
+    "initials": "qt",
+    "full": "qingtian"
+  },
+  "你听得到": {
+    "initials": "ntdd",
+    "full": "nitingdedao"
+  },
+  "曾郁婷": {
+    "initials": "zyt",
+    "full": "zengyuting"
+  },
+  "同一种调调": {
+    "initials": "tyztt",
+    "full": "tongyizhongtiaotiao"
+  },
+  "她的睫毛": {
+    "initials": "tdjm",
+    "full": "tadejiemao"
+  },
+  "以父之名": {
+    "initials": "yfzm",
+    "full": "yifuzhiming"
+  },
+  "爱情悬崖": {
+    "initials": "aqxy",
+    "full": "aiqingxuanya"
+  },
+  "徐若瑄": {
+    "initials": "xrx",
+    "full": "xuruoxuan"
+  },
+  "懦夫": {
+    "initials": "nf",
+    "full": "nuofu"
+  },
+  "梯田": {
+    "initials": "tt",
+    "full": "titian"
+  },
+  "双刀": {
+    "initials": "sd",
+    "full": "shuangdao"
+  },
+  "给我一首歌的时间": {
+    "initials": "gwysgdsj",
+    "full": "geiwoyishougedeshijian"
+  },
+  "乔克叔叔": {
+    "initials": "qkss",
+    "full": "qiaokeshushu"
+  },
+  "时光机": {
+    "initials": "sgj",
+    "full": "shiguangji"
+  },
+  "说好的幸福呢": {
+    "initials": "shdxfn",
+    "full": "shuohaodexingfune"
+  },
+  "稻香": {
+    "initials": "dx",
+    "full": "daoxiang"
+  },
+  "龙战骑士": {
+    "initials": "lzqs",
+    "full": "longzhanqishi"
+  },
+  "花海": {
+    "initials": "hh",
+    "full": "huahai"
+  },
+  "古小力/黄淩嘉": {
+    "initials": "gxlhlj",
+    "full": "guxiaolihuanglingjia"
+  },
+  "蛇舞": {
+    "initials": "sw",
+    "full": "shewu"
+  },
+  "兰亭序": {
+    "initials": "ltx",
+    "full": "lantingxu"
+  },
+  "流浪诗人": {
+    "initials": "llsr",
+    "full": "liulangshiren"
+  },
+  "魔术先生": {
+    "initials": "msxs",
+    "full": "moshuxiansheng"
+  },
+  "火车叨位去": {
+    "initials": "hctwq",
+    "full": "huochetaoweiqu"
+  },
+  "回到过去": {
+    "initials": "hdgq",
+    "full": "huidaoguoqu"
+  },
+  "刘畊宏": {
+    "initials": "lgh",
+    "full": "liugenghong"
+  },
+  "爷爷泡的茶": {
+    "initials": "yypdc",
+    "full": "yeyepaodecha"
+  },
+  "半兽人": {
+    "initials": "bsr",
+    "full": "banshouren"
+  },
+  "暗号": {
+    "initials": "ah",
+    "full": "anhao"
+  },
+  "许世昌": {
+    "initials": "xsc",
+    "full": "xushichang"
+  },
+  "最后的战役": {
+    "initials": "zhdzy",
+    "full": "zuihoudezhanyi"
+  },
+  "龙拳": {
+    "initials": "lq",
+    "full": "longquan"
+  },
+  "米兰的小铁匠": {
+    "initials": "mldxtj",
+    "full": "milandexiaotiejiang"
+  },
+  "分裂": {
+    "initials": "fl",
+    "full": "fenlie"
+  },
+  "半岛铁盒": {
+    "initials": "bdth",
+    "full": "bandaotiehe"
+  },
+  "哪里都是你": {
+    "initials": "nldsn",
+    "full": "nalidushini"
+  },
+  "公公偏头痛": {
+    "initials": "ggptt",
+    "full": "gonggongpiantoutong"
+  },
+  "手语": {
+    "initials": "sy",
+    "full": "shouyu"
+  },
+  "乌克丽丽": {
+    "initials": "wkll",
+    "full": "wukelili"
+  },
+  "红尘客栈": {
+    "initials": "hckz",
+    "full": "hongchenkezhan"
+  },
+  "梦想启动": {
+    "initials": "mxqd",
+    "full": "mengxiangqidong"
+  },
+  "林义杰": {
+    "initials": "lyj",
+    "full": "linyijie"
+  },
+  "四季列车": {
+    "initials": "sjlc",
+    "full": "sijilieche"
+  },
+  "大笨钟": {
+    "initials": "dbz",
+    "full": "dabenzhong"
+  },
+  "爱你没差": {
+    "initials": "anmc",
+    "full": "ainimeicha"
+  },
+  "黄淩嘉": {
+    "initials": "hlj",
+    "full": "huanglingjia"
+  },
+  "傻笑": {
+    "initials": "sx",
+    "full": "shaxiao"
+  },
+  "明明就": {
+    "initials": "mmj",
+    "full": "mingmingjiu"
+  },
+  "比较大的大提琴": {
+    "initials": "bjdddtq",
+    "full": "bijiaodadedatiqin"
+  },
+  "七里香": {
+    "initials": "qlx",
+    "full": "qilixiang"
+  },
+  "外婆": {
+    "initials": "wp",
+    "full": "waipo"
+  },
+  "困兽之斗": {
+    "initials": "kszd",
+    "full": "kunshouzhidou"
+  },
+  "我的地盘": {
+    "initials": "wddp",
+    "full": "wodedipan"
+  },
+  "借口": {
+    "initials": "jk",
+    "full": "jiekou"
+  },
+  "园游会": {
+    "initials": "yyh",
+    "full": "yuanyouhui"
+  },
+  "止战之殇": {
+    "initials": "zzzs",
+    "full": "zhizhanzhishang"
+  },
+  "乱舞春秋": {
+    "initials": "lwcq",
+    "full": "luanwuchunqiu"
+  },
+  "将军": {
+    "initials": "jj",
+    "full": "jiangjun"
+  },
+  "搁浅": {
+    "initials": "gq",
+    "full": "geqian"
+  },
+  "惊叹号": {
+    "initials": "jth",
+    "full": "jingtanhao"
+  },
+  "公主病": {
+    "initials": "gzb",
+    "full": "gongzhubing"
+  },
+  "琴伤": {
+    "initials": "qs",
+    "full": "qinshang"
+  },
+  "Mine Mine": {
+    "initials": "minemine",
+    "full": "minemine"
+  },
+  "皮影戏": {
+    "initials": "pyx",
+    "full": "piyingxi"
+  },
+  "唐从圣": {
+    "initials": "tcs",
+    "full": "tangcongsheng"
+  },
+  "超跑女神": {
+    "initials": "cpns",
+    "full": "chaopaonvshen"
+  },
+  "水手怕水": {
+    "initials": "ssps",
+    "full": "shuishoupashui"
+  },
+  "世界未末日": {
+    "initials": "sjwmr",
+    "full": "shijieweimori"
+  },
+  "迷魂曲": {
+    "initials": "mhq",
+    "full": "mihunqu"
+  },
+  "你好吗": {
+    "initials": "nhm",
+    "full": "nihaoma"
+  },
+  "罗宇轩/李汪哲": {
+    "initials": "lyxlwz",
+    "full": "luoyuxuanliwangzhe"
+  },
+  "疗伤烧肉粽": {
+    "initials": "lssrz",
+    "full": "liaoshangshaorouzong"
+  },
+  "免费教学录影带": {
+    "initials": "mfjxlyd",
+    "full": "mianfeijiaoxueluyingdai"
+  },
+  "爱的飞行日记": {
+    "initials": "adfhrj",
+    "full": "aidefeihangriji"
+  },
+  "嘻哈空姐": {
+    "initials": "xhkj",
+    "full": "xihakongjie"
+  },
+  "超人不会飞": {
+    "initials": "crbhf",
+    "full": "chaorenbuhuifei"
+  },
+  "自导自演": {
+    "initials": "zdzy",
+    "full": "zidaoziyan"
+  },
+  "跨时代": {
+    "initials": "ksd",
+    "full": "kuashidai"
+  },
+  "说了再见": {
+    "initials": "slzj",
+    "full": "shuolezaijian"
+  },
+  "烟花易冷": {
+    "initials": "yhyl",
+    "full": "yanhuayileng"
+  },
+  "我落泪": {
+    "initials": "wll",
+    "full": "woluolei"
+  },
+  "雨下一整晚": {
+    "initials": "yxyzw",
+    "full": "yuxiayizhengwan"
+  },
+  "好久不见": {
+    "initials": "hjbj",
+    "full": "haojiubujian"
+  },
+  "最长的电影": {
+    "initials": "zcddy",
+    "full": "zuichangdedianying"
+  },
+  "甜甜的": {
+    "initials": "ttd",
+    "full": "tiantiande"
+  },
+  "青花瓷": {
+    "initials": "qhc",
+    "full": "qinghuaci"
+  },
+  "我不配": {
+    "initials": "wbp",
+    "full": "wobupei"
+  },
+  "牛仔很忙": {
+    "initials": "nzhm",
+    "full": "niuzihenmang"
+  },
+  "无双": {
+    "initials": "ws",
+    "full": "wushuang"
+  },
+  "彩虹": {
+    "initials": "ch",
+    "full": "caihong"
+  },
+  "阳光宅男": {
+    "initials": "ygzn",
+    "full": "yangguangzhainan"
+  },
+  "蒲公英的约定": {
+    "initials": "pgydyd",
+    "full": "pugongyingdeyueding"
+  },
+  "扯": {
+    "initials": "c",
+    "full": "che"
+  },
+  "听妈妈的话": {
+    "initials": "tmmdh",
+    "full": "tingmamadehua"
+  },
+  "菊花台": {
+    "initials": "jht",
+    "full": "juhuatai"
+  },
+  "退后": {
+    "initials": "th",
+    "full": "tuihou"
+  },
+  "本草纲目": {
+    "initials": "bcgm",
+    "full": "bencaogangmu"
+  },
+  "夜的第七章": {
+    "initials": "yddqz",
+    "full": "yedediqizhang"
+  },
+  "迷迭香": {
+    "initials": "mdx",
+    "full": "midiexiang"
+  },
+  "千里之外": {
+    "initials": "qlzw",
+    "full": "qianlizhiwai"
+  },
+  "心雨": {
+    "initials": "xy",
+    "full": "xinyu"
+  },
+  "红模仿": {
+    "initials": "hmf",
+    "full": "hongmofang"
+  },
+  "白色风车": {
+    "initials": "bsfc",
+    "full": "baisefengche"
+  },
+  "反方向的钟": {
+    "initials": "ffxdz",
+    "full": "fanfangxiangdezhong"
+  },
+  "印地安老斑鸠": {
+    "initials": "ydalbj",
+    "full": "yindianlaobanjiu"
+  },
+  "完美主义": {
+    "initials": "wmzy",
+    "full": "wanmeizhuyi"
+  },
+  "黑色幽默": {
+    "initials": "hsym",
+    "full": "heiseyoumo"
+  },
+  "可爱女人": {
+    "initials": "kanr",
+    "full": "keainvren"
+  },
+  "伊斯坦堡": {
+    "initials": "ystb",
+    "full": "yisitanbao"
+  },
+  "斗牛": {
+    "initials": "dn",
+    "full": "douniu"
+  },
+  "娘子": {
+    "initials": "nz",
+    "full": "niangzi"
+  },
+  "龙卷风": {
+    "initials": "ljf",
+    "full": "longjuanfeng"
+  },
+  "星晴": {
+    "initials": "xq",
+    "full": "xingqing"
+  },
+  "简单爱": {
+    "initials": "jda",
+    "full": "jiandanai"
+  },
+  "对不起": {
+    "initials": "dbq",
+    "full": "duibuqi"
+  },
+  "忍者": {
+    "initials": "rz",
+    "full": "renzhe"
+  },
+  "上海一九四三": {
+    "initials": "shyjss",
+    "full": "shanghaiyijiusisan"
+  },
+  "开不了口": {
+    "initials": "kblk",
+    "full": "kaibulekou"
+  },
+  "爸我回来了": {
+    "initials": "bwhll",
+    "full": "bawohuilaile"
+  },
+  "威廉古堡": {
+    "initials": "wlgb",
+    "full": "weiliangubao"
+  },
+  "爱在西元前": {
+    "initials": "azxyq",
+    "full": "aizaixiyuanqian"
+  },
+  "双截棍": {
+    "initials": "sjg",
+    "full": "shuangjiegun"
+  },
+  "安静": {
+    "initials": "aj",
+    "full": "anjing"
+  }
+};
+
 // 1. 专辑元数据映射（封面图片、发布年份）
 const ALBUM_METADATA = {
   "十一月的萧邦": { cover: "专辑封面/11月的萧邦-2005.webp", year: "2005" },
@@ -73,14 +640,17 @@ const ALBUM_METADATA = {
 let state = {
   albums: [],        // 过滤并加工后的专辑数据
   flatSongs: [],     // 扁平化的所有歌曲数据（用于全局快速检索）
-  favorites: [],     // 收藏的歌曲唯一ID数组
+  favorites: [],     // 收藏的歌曲唯一ID对象数组 (前向兼容)
   searchHistory: [], // 历史搜索记录
   activeTab: 'albums',
   currentSong: null,
   selectedLyrics: [], // 当前选中的歌词行内容数组
   currentSearchType: 'all', // 'all', 'album', 'song', 'lyric'
   isExactMatch: false,
-  showCD: true
+  showCD: true,
+  lyricsFontSize: 16, // 默认歌词字号 px
+  currentPlaylist: [], // 当前切歌上下文列表
+  favoritesSort: 'default' // 收藏排序规则: 'default', 'time-desc', 'time-asc'
 };
 
 // 3. 初始化入口
@@ -88,6 +658,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initData();
   loadFavorites();
   loadSearchHistory();
+  // 读取字号缓存
+  const savedFontSize = localStorage.getItem('jay_lyrics_font_size');
+  if (savedFontSize) {
+    state.lyricsFontSize = parseInt(savedFontSize);
+  }
   initDOMEvents();
   renderAlbums();
   renderHistory();
@@ -117,7 +692,12 @@ function initData() {
           composer: song.composer || "周杰伦",
           lyricist: song.lyricist || "周杰伦",
           songLrc: song.songLrc || [],
-          pinyinName: getPinyinInitials(song.name), // 提取拼音首字母用于搜索
+          pinyinName: getPinyinInitials(song.name),
+          fullPinyinName: getPinyinFull(song.name),
+          pinyinLyricist: getPinyinInitials(song.lyricist || "周杰伦"),
+          fullPinyinLyricist: getPinyinFull(song.lyricist || "周杰伦"),
+          pinyinComposer: getPinyinInitials(song.composer || "周杰伦"),
+          fullPinyinComposer: getPinyinFull(song.composer || "周杰伦"),
           albumName: album.name,
           cover: meta.cover,
           year: meta.year,
@@ -135,17 +715,35 @@ function initData() {
         songs: formattedSongs
       };
     });
-
-  // 按专辑年份升序排序
+  
+  // 按照年份对专辑排序
   state.albums.sort((a, b) => parseInt(a.year) - parseInt(b.year));
 }
 
-// 加载收藏列表
+function getPinyinInitials(str) {
+  if (typeof str !== 'string') return '';
+  return PINYIN_MAP[str] ? PINYIN_MAP[str].initials : '';
+}
+
+function getPinyinFull(str) {
+  if (typeof str !== 'string') return '';
+  return PINYIN_MAP[str] ? PINYIN_MAP[str].full : '';
+}
+
 function loadFavorites() {
   try {
     const saved = localStorage.getItem('jay_lyrics_favorites');
     if (saved) {
-      state.favorites = JSON.parse(saved);
+      let parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        // 前向兼容性转换：将老版本的字符串格式自动转换升级为带时间戳的对象格式
+        state.favorites = parsed.map(item => {
+          if (typeof item === 'string') {
+            return { id: item, time: Date.now() };
+          }
+          return item;
+        });
+      }
     }
   } catch (e) {
     console.error('加载收藏夹失败:', e);
@@ -156,7 +754,6 @@ function loadFavorites() {
   }
 }
 
-// 保存收藏列表
 function saveFavorites() {
   try {
     localStorage.setItem('jay_lyrics_favorites', JSON.stringify(state.favorites));
@@ -165,55 +762,19 @@ function saveFavorites() {
   }
 }
 
-// 简易汉字转拼音首字母算法，用于歌名检索
-function getPinyinInitials(str) {
-  if (typeof str !== 'string') return '';
-  const pinyinArr = [];
-  const charMap = {
-    'a': '啊阿', 'b': '八半不吧白避奔波边步兵报悲本憋病表捕拨杯被爸辈版榜般保包玻剥博',
-    'c': '七才草拆擦猜踩彩惨惨仓苍舱操草册侧策测层叉插查茶察差拆柴缠产颤猖场常长厂敞畅唱超抄朝潮吵炒车扯彻撤尘臣沉辰陈晨闯衬称趁撑成呈承诚城乘惩程秤吃失迟池驰池迟持赤翅充冲虫崇宠抽仇绸愁筹稠丑瞅臭出初除楚处触川穿传船喘串疮窗床创吹炊垂锤春椿醇唇纯准捉桌拙昨琢作左佐',
-    'd': '大答打代带待怠戴丹单担石担胆旦弹蛋当挡党荡刀导岛倒盗道稻得德的等登灯等低滴提敌涤的底抵地第帝弟递缔颠尖点典垫电奠雕刁掉吊钓调跌叠碟丁顶盯钉鼎顶丢东冬懂动冻洞都抖斗陡督毒独读渡堵赌杜肚度渡端短段断锻堆队对吨蹲盾夺度躲惰堕多咄哆夺度',
-    'e': '阿饿额恶俄饿而儿尔耳二尔',
-    'f': '发法反方饭放分风封丰缝佛否夫扶拂服福抚辅父付负附复副覆赋复幅富妇',
-    'g': '个各歌给根跟工公弓功共贡沟狗够古骨谷鼓固顾挂怪关观管官馆贯惯光广归规轨道鬼柜贵国果过',
-    'h': '哈还孩海害汉汗好号呵和合何河和核黑痕很恨横红宏洪虹吼后厚候呼忽湖胡蝴糊胡弧虎互户护花华滑画化话怀坏欢环缓幻荒慌黄皇黄谎灰恢回悔毁汇会绘惠毁汇豁活火伙或货获祸',
-    'i': '',
-    'j': '几及极集级急挤及集级挤己记纪极即急疾嫉级吉技既继寄加家夹佳家架假嫁价尖坚肩艰监兼简剪检碱见件建健角脚缴叫教接皆结节解姐界借介届巾金今仅紧锦尽近进晋浸京经睛惊晶精景静境镜炯究九久酒旧救就居局菊橘咀沮举句拒具巨聚距惧锯卷倦决绝觉',
-    'k': '卡开看康抗考靠科棵颗壳口扣寇枯哭酷夸跨快宽况狂矿愧溃昆捆困阔',
-    'l': '啦拉来赖兰栏蓝拦篮懒烂浪劳老落乐勒雷累泪冷厘黎李理里莉鲤力历丽利励立粒联脸练粮两亮量辽疗列劣林临邻林凛吝伶灵领另留流留刘柳六陆录路乱论沦落略',
-    'm': '吗妈麻马买麦卖满慢漫忙毛矛茂冒帽貌没美每门们猛梦迷眯弥秘密棉免面苗描秒庙妙民敏名明命谬摸磨摩魔抹末莫陌谋某木墓幕目牧穆',
-    'n': '那纳乃奶耐南难脑恼闹呢内嫩能你拟泥逆年念娘鸟尿捏您宁凝牛扭农弄奴怒女暖略虐挪懦糯',
-    'o': '哦偶喔',
-    'p': '爬怕派攀盘判叛旁抛炮跑泡呸赔陪配喷盆朋棚蓬膨捧碰皮匹批劈疲脾匹屁篇偏片骗飘漂品平评凭瓶坡泼婆迫破剖铺仆扑葡铺瀑瀑欺',
-    'q': '七期齐奇骑起气汽契砌器恰千迁牵铅千前钱强墙枪抢敲悄桥瞧巧切窃亲轻倾清晴情顷请庆秋丘求球区驱屈去取去趣圈全权泉缺却雀群',
-    'r': '然染娆饶惹人仁忍刃认任扔仍日容荣融柔肉如儒乳入褥软阮蕊瑞锐闰若弱',
-    's': '三伞散桑嗓丧扫嫂色森僧杀沙啥傻砂刹筛晒山扇单闪衫善扇陕伤商赏上尚梢烧稍少哨舌蛇设社舍射涉摄申伸身深神审甚慎生声牲升绳省盛剩尸失师诗施狮湿十什石时识实拾食蚀使始驶示世仕市式事势侍试视誓室是收手守首寿受兽售授首输书舒枢熟数暑属束述树竖数率刷耍衰双霜谁水税睡顺瞬说缩数私司丝死四寺似肆松送宋诵诉宿塑酸算虽随岁碎孙损蓑缩所索锁锁',
-    't': '他它塔塌台太态谈弹叹碳汤堂糖躺趟涛桃逃淘讨套特疼梯踢提题体替天添田甜填挑条挑战贴铁听厅听挺通同铜统痛投头透突图徒涂土吐兔团推腿退吞脱托脱拖妥驼椭拓',
-    'w': '挖瓦哇歪外弯湾完玩晚碗万汪王网往忘旺望危威微为违围唯委伟伪尾纬未味胃谓温文闻稳问我卧握屋无吴五武舞务物误悟雾',
-    'x': '夕西吸希昔析席袭媳洗喜戏系细隙虾瞎下夏吓仙先纤咸贤闲显险现县线限香乡相箱详想向象消销小晓孝效校笑些歇协邪胁写血泄谢屑心新欣信星行醒姓胸兄弟雄休修羞宿秀袖嘘需许序叙绪续恤轩宣悬选削学雪血寻巡旬驯询循呀压押鸭牙芽崖雅亚呀咽烟延言严岩沿炎研掩眼演宴厌谚样羊阳扬养氧样要药耀爷也野夜叶一伊衣医依仪宜姨移遗颐疑乙已以意艺忆易议亦异因阴音银引隐印应英影硬映尤由邮犹油游友有又右幼雨语玉郁育遇预域欲御元园原圆源愿月悦阅云匀允许运蕴晕',
-    'y': '呀压押鸭牙芽崖雅亚呀咽烟延言严岩沿炎研掩眼演宴厌谚样羊阳扬养氧样要药耀爷也野夜叶一伊衣医依仪宜姨移遗颐疑乙已以意艺忆易议亦异因阴音银引隐印应英影硬映尤由邮犹油游友有又右幼雨语玉郁育遇预域欲御元园原圆源愿月悦阅云匀允许运蕴晕',
-    'z': '只之支氏汁芝枝知织肢脂蜘执直值职植殖止指纸旨指至志制治致秩智置稚质炙忠终钟衷肿种众重州周洲粥轴皱骤朱珠株诸猪竹烛主煮嘱助住注驻筑铸抓爪专砖转撰赚装壮状撞追准椎卓琢捉桌拙昨琢作左佐'
-  };
-  
-  for (let char of str) {
-    let matched = false;
-    for (let key in charMap) {
-      if (charMap[key].includes(char)) {
-        pinyinArr.push(key);
-        matched = true;
-        break;
-      }
-    }
-    if (!matched) {
-      if (/[a-zA-Z0-9]/.test(char)) {
-        pinyinArr.push(char.toLowerCase());
-      }
+function updateFavoriteButtonState() {
+  const favBtn = document.getElementById('song-fav-btn');
+  if (favBtn && state.currentSong) {
+    const isFav = state.favorites.some(item => item.id === state.currentSong.id);
+    if (isFav) {
+      favBtn.classList.add('active');
+    } else {
+      favBtn.classList.remove('active');
     }
   }
-  return pinyinArr.join('');
 }
 
-// 加载历史记录
+
 function loadSearchHistory() {
   try {
     const saved = localStorage.getItem('jay_lyrics_search_history');
@@ -349,7 +910,8 @@ function initDOMEvents() {
     tag.addEventListener('click', () => {
       const query = tag.dataset.query;
       searchInput.value = query;
-      clearSearchBtn.style.display = 'flex';
+      const clearBtn = document.getElementById('clear-search-btn');
+      if (clearBtn) clearBtn.style.display = 'flex';
       performSearch(query);
       saveSearchHistory(query);
     });
@@ -367,15 +929,15 @@ function initDOMEvents() {
     const query = e.target.value.trim();
     if (query) {
       clearSearchBtn.style.display = 'flex';
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        performSearch(query);
+      }, 300);
     } else {
       clearSearchBtn.style.display = 'none';
-      performSearch(''); // 清空展现历史和推荐
+      clearTimeout(searchTimeout);
+      performSearch(''); // 立即清空，恢复初始推荐和历史记录
     }
-    
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      performSearch(query);
-    }, 300);
   });
 
   clearSearchBtn.addEventListener('click', () => {
@@ -411,6 +973,79 @@ function initDOMEvents() {
       }
     });
   }
+
+  // 绑定上一曲/下一曲按钮
+  const prevBtn = document.getElementById('prev-song-btn');
+  const nextBtn = document.getElementById('next-song-btn');
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      switchSongInPlaylist(-1);
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      switchSongInPlaylist(1);
+    });
+  }
+
+  // 绑定字号加减按钮
+  const fontDecBtn = document.getElementById('font-dec-btn');
+  const fontIncBtn = document.getElementById('font-inc-btn');
+  if (fontDecBtn) {
+    fontDecBtn.addEventListener('click', () => {
+      changeLyricsFontSize(-2);
+    });
+  }
+  if (fontIncBtn) {
+    fontIncBtn.addEventListener('click', () => {
+      changeLyricsFontSize(2);
+    });
+  }
+
+  // 绑定收藏页面排序下拉菜单触发
+  const sortTriggerBtn = document.getElementById('sort-trigger-btn');
+  const sortDropdownMenu = document.getElementById('sort-dropdown-menu');
+  const sortDropdownOptions = document.querySelectorAll('.sort-dropdown-option');
+
+  if (sortTriggerBtn && sortDropdownMenu) {
+    sortTriggerBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // 阻止事件冒泡，防止触发全局关闭监听
+      
+      // 开启菜单时，高亮当前所选
+      sortDropdownOptions.forEach(opt => {
+        if (opt.dataset.sort === state.favoritesSort) {
+          opt.classList.add('active');
+        } else {
+          opt.classList.remove('active');
+        }
+      });
+      
+      sortDropdownMenu.classList.toggle('open');
+    });
+  }
+
+  // 点击外部区域关闭下拉菜单
+  document.addEventListener('click', (e) => {
+    if (sortDropdownMenu && sortDropdownMenu.classList.contains('open')) {
+      if (sortTriggerBtn && !sortTriggerBtn.contains(e.target) && !sortDropdownMenu.contains(e.target)) {
+        sortDropdownMenu.classList.remove('open');
+      }
+    }
+  });
+
+  sortDropdownOptions.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sortDropdownOptions.forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      state.favoritesSort = opt.dataset.sort;
+      renderFavorites();
+      
+      setTimeout(() => {
+        if (sortDropdownMenu) sortDropdownMenu.classList.remove('open');
+      }, 150);
+    });
+  });
 
   // 侧滑关闭面板手势适配 (iOS Safari 体验增强)
   setupSwipeToClose('album-panel', 'right');
@@ -507,7 +1142,7 @@ function openAlbumDetail(album) {
     const songRow = document.createElement('div');
     songRow.className = 'song-item';
     
-    const isFav = state.favorites.includes(song.id);
+    const isFav = state.favorites.some(item => item.id === song.id);
     
     songRow.innerHTML = `
       <div class="song-index">${idx + 1}</div>
@@ -541,9 +1176,16 @@ function openAlbumDetail(album) {
 }
 
 // 7. 歌词详情面板逻辑
-function openSongLyrics(song, highlightKeyword = '') {
+function openSongLyrics(song, highlightKeyword = '', playlist = null) {
   state.currentSong = song;
   state.selectedLyrics = []; // 重置选中的歌词
+
+  // 绑定切歌上下文播放列表
+  if (playlist) {
+    state.currentPlaylist = playlist;
+  } else if (!state.currentPlaylist || state.currentPlaylist.length === 0) {
+    state.currentPlaylist = state.flatSongs;
+  }
 
   document.getElementById('song-header-title').textContent = song.name;
   document.getElementById('song-header-album').textContent = `专辑：《${song.albumName}》 (${song.year})`;
@@ -558,12 +1200,7 @@ function openSongLyrics(song, highlightKeyword = '') {
   backdrop.style.backgroundImage = `url('${encodeURI(song.cover)}')`;
 
   // 更新收藏状态图标
-  const favBtn = document.getElementById('song-fav-btn');
-  if (state.favorites.includes(song.id)) {
-    favBtn.classList.add('active');
-  } else {
-    favBtn.classList.remove('active');
-  }
+  updateFavoriteButtonState();
 
   // 渲染歌词
   const lyricsWrapper = document.getElementById('lyrics-wrapper');
@@ -612,6 +1249,9 @@ function openSongLyrics(song, highlightKeyword = '') {
     lyricsWrapper.innerHTML = '<div class="lyric-line" style="color:var(--text-muted)">纯音乐，无歌词</div>';
   }
 
+  // 应用当前选中的字号
+  applyLyricsFontSize();
+
   const songPanel = document.getElementById('song-panel');
   songPanel.classList.add('open');
 
@@ -619,18 +1259,15 @@ function openSongLyrics(song, highlightKeyword = '') {
   setTimeout(() => {
     const container = document.getElementById('lyrics-container');
     if (highlightedElement) {
-      const offsetTop = highlightedElement.offsetTop;
-      container.scrollTo({
-        top: offsetTop - container.clientHeight / 2 + 30,
-        behavior: 'smooth'
-      });
+      const containerHeight = container.clientHeight;
+      const elementTop = highlightedElement.offsetTop;
+      const elementHeight = highlightedElement.clientHeight;
+      container.scrollTop = elementTop - (containerHeight / 2) + (elementHeight / 2);
     } else {
-      container.scrollTo({ top: 0 });
+      container.scrollTop = 0;
     }
-  }, 350);
+  }, 300);
 }
-
-// 选择/取消选择歌词行
 function toggleSelectLyricLine(element, lineContent) {
   const idx = state.selectedLyrics.indexOf(lineContent);
   if (element.classList.contains('selected-line')) {
@@ -674,20 +1311,27 @@ function performSearch(query) {
     const type = state.currentSearchType;
     const isExact = state.isExactMatch;
 
-    // 匹配规则函数，支持拼音检索
-    const matchString = (target, searchStr, pinyinTarget = '') => {
+    // 匹配规则函数，支持拼音首字母和全拼检索
+    const matchString = (target, searchStr, pinyinTarget = '', fullPinyinTarget = '') => {
       if (target === undefined || target === null) return false;
       const cleanTarget = String(target).toLowerCase();
       const cleanSearch = String(searchStr).toLowerCase();
       const cleanPinyin = String(pinyinTarget).toLowerCase();
+      const cleanFullPinyin = String(fullPinyinTarget).toLowerCase();
       
       if (isExact) {
-        return cleanTarget === cleanSearch || (cleanPinyin && cleanPinyin === cleanSearch);
+        return cleanTarget === cleanSearch || 
+               (cleanPinyin && cleanPinyin === cleanSearch) ||
+               (cleanFullPinyin && cleanFullPinyin === cleanSearch);
       } else {
         // 模糊检索：支持空格分词多重过滤
         const keywords = cleanSearch.split(/\s+/).filter(k => k.length > 0);
         if (keywords.length === 0) return false;
-        return keywords.every(kw => cleanTarget.includes(kw) || (cleanPinyin && cleanPinyin.includes(kw)));
+        return keywords.every(kw => 
+          cleanTarget.includes(kw) || 
+          (cleanPinyin && cleanPinyin.includes(kw)) ||
+          (cleanFullPinyin && cleanFullPinyin.includes(kw))
+        );
       }
     };
 
@@ -700,9 +1344,25 @@ function performSearch(query) {
       matchedAlbums = state.albums.filter(album => matchString(album.name, query));
     }
 
-    // [2] 歌曲名检索（传入拼音辅助匹配）
-    if (type === 'all' || type === 'song') {
-      matchedSongs = state.flatSongs.filter(song => matchString(song.name, query, song.pinyinName));
+    // [2] 歌曲名及作词/作曲人检索（传入拼音首字母与全拼辅助匹配）
+    if (type === 'all' || type === 'song' || type === 'lyricist' || type === 'composer') {
+      matchedSongs = state.flatSongs.filter(song => {
+        if (type === 'lyricist') {
+          return matchString(song.lyricist, query, song.pinyinLyricist, song.fullPinyinLyricist);
+        }
+        if (type === 'composer') {
+          return matchString(song.composer, query, song.pinyinComposer, song.fullPinyinComposer);
+        }
+        if (type === 'song') {
+          return matchString(song.name, query, song.pinyinName, song.fullPinyinName);
+        }
+        // type === 'all' 时，匹配歌曲名、作词人、作曲人
+        return (
+          matchString(song.name, query, song.pinyinName, song.fullPinyinName) ||
+          matchString(song.lyricist, query, song.pinyinLyricist, song.fullPinyinLyricist) ||
+          matchString(song.composer, query, song.pinyinComposer, song.fullPinyinComposer)
+        );
+      });
     }
 
     // [3] 歌词内容检索
@@ -771,12 +1431,14 @@ function performSearch(query) {
           <div class="search-result-meta">
             <span>专辑：${song.albumName}</span>
             <span>•</span>
-            <span>年份：${song.year}</span>
+            <span>词：${highlightText(song.lyricist, query)}</span>
+            <span>•</span>
+            <span>曲：${highlightText(song.composer, query)}</span>
           </div>
         `;
         card.addEventListener('click', () => {
           saveSearchHistory(query); // 记录搜索词
-          openSongLyrics(song);
+          openSongLyrics(song, '', matchedSongs);
         });
         groupDiv.appendChild(card);
       });
@@ -819,7 +1481,8 @@ function performSearch(query) {
         
         card.addEventListener('click', () => {
           saveSearchHistory(query); // 记录搜索词
-          openSongLyrics(item.song, query);
+          const contextPlaylist = matchedLyrics.map(m => m.song);
+          openSongLyrics(item.song, query, contextPlaylist);
         });
         groupDiv.appendChild(card);
       });
@@ -875,63 +1538,98 @@ function highlightText(text, keyword) {
 function renderFavorites() {
   const container = document.getElementById('favorites-container');
   const emptyState = document.getElementById('favorites-empty-state');
-  container.innerHTML = '';
+  const sortBar = document.getElementById('favorites-sort-bar');
+  if (!container || !emptyState) return;
 
-  const favSongs = state.flatSongs.filter(song => state.favorites.includes(song.id));
-
-  if (favSongs.length === 0) {
+  if (state.favorites.length === 0) {
+    container.innerHTML = '';
     emptyState.style.display = 'flex';
-    container.style.display = 'none';
+    if (sortBar) sortBar.style.display = 'none';
     return;
   }
 
   emptyState.style.display = 'none';
-  container.style.display = 'flex';
+  if (sortBar) sortBar.style.display = 'flex';
+  container.innerHTML = '';
 
-  favSongs.forEach((song, idx) => {
-    const songRow = document.createElement('div');
-    songRow.className = 'song-item';
-    songRow.innerHTML = `
-      <div class="song-index">${idx + 1}</div>
-      <div class="song-title-wrapper">
-        <div class="song-title">${song.name}</div>
-        <div class="song-album-name">${song.albumName}</div>
+  // 进行排序分流
+  let sortedFavorites = [...state.favorites];
+  if (state.favoritesSort === 'time-desc') {
+    sortedFavorites.sort((a, b) => b.time - a.time);
+  } else if (state.favoritesSort === 'time-asc') {
+    sortedFavorites.sort((a, b) => a.time - b.time);
+  } else if (state.favoritesSort === 'album') {
+    // 按专辑名称排序，专辑相同时按原本曲目顺序
+    sortedFavorites.sort((a, b) => {
+      const songA = state.flatSongs.find(s => s.id === a.id);
+      const songB = state.flatSongs.find(s => s.id === b.id);
+      if (!songA || !songB) return 0;
+      const albumComp = songA.albumName.localeCompare(songB.albumName, 'zh');
+      if (albumComp !== 0) return albumComp;
+      return songA.index - songB.index;
+    });
+  } else {
+    // 默认排序：按专辑和歌曲在全局 flatSongs 中的顺序
+    const orderMap = {};
+    state.flatSongs.forEach((song, index) => {
+      orderMap[song.id] = index;
+    });
+    sortedFavorites.sort((a, b) => (orderMap[a.id] || 0) - (orderMap[b.id] || 0));
+  }
+
+  // 渲染歌曲卡片
+  sortedFavorites.forEach((item, idx) => {
+    const song = state.flatSongs.find(s => s.id === item.id);
+    if (!song) return;
+
+    const card = document.createElement('div');
+    card.className = 'song-item';
+    card.innerHTML = `
+      <div class="song-item-left">
+        <div class="song-index">${idx + 1}</div>
+        <div class="song-info">
+          <div class="song-name-row">
+            <span class="song-name">${song.name} - 《${song.albumName}》</span>
+          </div>
+        </div>
       </div>
-      <button class="song-action-btn fav active">
+      <button class="song-action-btn fav active" style="margin-left:auto;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
       </button>
     `;
 
-    songRow.addEventListener('click', (e) => {
-      if (e.target.closest('.fav')) {
-        e.stopPropagation();
-        toggleFavorite(song.id);
-        renderFavorites(); // 重新渲染列表
-        return;
-      }
-      openSongLyrics(song);
+    card.querySelector('.song-action-btn.fav').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFavorite(song.id);
     });
 
-    container.appendChild(songRow);
+    // 传入收藏 Playlist 作为翻页上下文
+    const contextPlaylist = sortedFavorites.map(favItem => state.flatSongs.find(s => s.id === favItem.id)).filter(Boolean);
+    card.addEventListener('click', () => {
+      openSongLyrics(song, '', contextPlaylist);
+    });
+
+    container.appendChild(card);
   });
 }
-
 function toggleFavorite(songId) {
-  const idx = state.favorites.indexOf(songId);
-  if (idx > -1) {
-    state.favorites.splice(idx, 1);
+  const index = state.favorites.findIndex(item => item.id === songId);
+  if (index > -1) {
+    state.favorites.splice(index, 1);
     showToast('已取消收藏');
   } else {
-    state.favorites.push(songId);
+    state.favorites.push({ id: songId, time: Date.now() });
     showToast('已加入收藏');
   }
   saveFavorites();
-
-  // 动态更新歌曲列表或搜索结果里匹配的按钮样式
-  const btn = document.getElementById('song-fav-btn');
-  if (btn && state.currentSong && state.currentSong.id === songId) {
-    btn.classList.toggle('active');
+  
+  // 如果在收藏页，需要重新渲染
+  if (state.activeTab === 'favorites') {
+    renderFavorites();
   }
+  
+  // 更新歌曲详情页中的收藏按钮状态
+  updateFavoriteButtonState();
 }
 
 // 10. 歌词分享卡片生成 (使用 Canvas 绘制高解析海报，完美支持 iOS 长按保存)
@@ -1203,4 +1901,42 @@ function escapeHtml(string) {
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+}
+
+// 歌词字号调整与应用
+function applyLyricsFontSize() {
+  const lines = document.querySelectorAll('.lyric-line');
+  lines.forEach(line => {
+    if (line.classList.contains('highlight-line')) {
+      line.style.fontSize = (state.lyricsFontSize + 2) + 'px';
+    } else {
+      line.style.fontSize = state.lyricsFontSize + 'px';
+    }
+  });
+}
+
+function changeLyricsFontSize(delta) {
+  state.lyricsFontSize = Math.min(26, Math.max(14, state.lyricsFontSize + delta));
+  localStorage.setItem('jay_lyrics_font_size', state.lyricsFontSize);
+  applyLyricsFontSize();
+}
+
+// 播放列表内切歌
+function switchSongInPlaylist(direction) {
+  if (!state.currentSong || !state.currentPlaylist || state.currentPlaylist.length === 0) return;
+  
+  const currentIndex = state.currentPlaylist.findIndex(song => song.id === state.currentSong.id);
+  if (currentIndex === -1) return;
+  
+  let nextIndex = currentIndex + direction;
+  
+  // 循环切歌
+  if (nextIndex < 0) {
+    nextIndex = state.currentPlaylist.length - 1;
+  } else if (nextIndex >= state.currentPlaylist.length) {
+    nextIndex = 0;
+  }
+  
+  const nextSong = state.currentPlaylist[nextIndex];
+  openSongLyrics(nextSong, '', state.currentPlaylist);
 }

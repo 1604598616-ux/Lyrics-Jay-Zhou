@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jay-lyrics-cache-v5';
+const CACHE_NAME = 'jay-lyrics-cache-v19';
 
 // 需要缓存的静态资源列表
 const ASSETS_TO_CACHE = [
@@ -28,9 +28,12 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[Service Worker] Caching app shell and covers');
-        // 使用 addAll 强制缓存所有文件
-        return cache.addAll(ASSETS_TO_CACHE);
+        console.log('[Service Worker] Caching app shell and covers with cache reload');
+        // 使用 reload 请求绕过浏览器本地缓存，获取服务器最新版本
+        const requests = ASSETS_TO_CACHE.map(url => {
+          return new Request(url, { cache: 'reload' });
+        });
+        return cache.addAll(requests);
       })
       .then(() => self.skipWaiting())
   );
@@ -58,7 +61,7 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(event.request)
+    caches.match(event.request, { ignoreSearch: true })
       .then(cachedResponse => {
         // 如果命中缓存，直接返回；否则发起网络请求
         if (cachedResponse) {
