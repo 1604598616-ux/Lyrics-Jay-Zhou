@@ -1073,6 +1073,18 @@ function initDOMEvents() {
   document.getElementById('poster-copy-btn').addEventListener('click', () => {
     savePosterAsImage();
   });
+
+  // 歌词行点击事件委托（分享选择）
+  const lyricsWrapper = document.getElementById('lyrics-wrapper');
+  if (lyricsWrapper) {
+    lyricsWrapper.addEventListener('click', (e) => {
+      const lineDiv = e.target.closest('.lyric-line');
+      if (lineDiv && lineDiv.dataset.content) {
+        const lineContent = lineDiv.dataset.content;
+        toggleSelectLyricLine(lineDiv, lineContent);
+      }
+    });
+  }
 }
 
 // 5. 渲染模块
@@ -1204,15 +1216,11 @@ function openSongLyrics(song, highlightKeyword = '', playlist = null) {
 
   // 渲染歌词
   const lyricsWrapper = document.getElementById('lyrics-wrapper');
-  lyricsWrapper.innerHTML = '';
-
   let highlightedElement = null;
 
   if (song.songLrc && song.songLrc.length > 0) {
+    let lyricsHtml = '';
     song.songLrc.forEach((line, index) => {
-      const lineDiv = document.createElement('div');
-      lineDiv.className = 'lyric-line';
-      
       // 处理检索高亮匹配
       let displayHtml = escapeHtml(line);
       let isLineMatched = false;
@@ -1226,25 +1234,14 @@ function openSongLyrics(song, highlightKeyword = '', playlist = null) {
         }
       }
 
-      lineDiv.innerHTML = displayHtml;
-      lineDiv.dataset.index = index;
-      lineDiv.dataset.content = line;
-
-      // 如果有匹配，则高亮本行背景并记录用于滚动定位
-      if (isLineMatched) {
-        lineDiv.classList.add('highlight-line');
-        if (!highlightedElement) {
-          highlightedElement = lineDiv;
-        }
-      }
-
-      // 歌词点击事件：选择用于卡片分享
-      lineDiv.addEventListener('click', () => {
-        toggleSelectLyricLine(lineDiv, line);
-      });
-
-      lyricsWrapper.appendChild(lineDiv);
+      const matchedClass = isLineMatched ? ' highlight-line' : '';
+      lyricsHtml += `<div class="lyric-line${matchedClass}" data-index="${index}" data-content="${escapeHtml(line)}">${displayHtml}</div>`;
     });
+    lyricsWrapper.innerHTML = lyricsHtml;
+
+    if (highlightKeyword) {
+      highlightedElement = lyricsWrapper.querySelector('.highlight-line');
+    }
   } else {
     lyricsWrapper.innerHTML = '<div class="lyric-line" style="color:var(--text-muted)">纯音乐，无歌词</div>';
   }

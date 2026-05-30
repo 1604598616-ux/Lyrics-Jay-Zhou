@@ -715,6 +715,7 @@ header h1 {
   background-color: #050507;
   z-index: 200;
   transform: translateY(100%);
+  will-change: transform; /* 开启GPU硬件加速提前合成层 */
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
@@ -735,11 +736,13 @@ header h1 {
   width: 140%;
   height: 140%;
   z-index: -1;
-  filter: blur(60px) brightness(0.25);
+  filter: blur(35px) brightness(0.25); /* 降低模糊半径优化手机GPU计算开销 */
   opacity: 0.35; /* 弱化歌曲封面图的投射亮度，使文字更易读 */
   background-size: cover;
   background-position: center;
   transition: background-image 0.5s ease;
+  transform: translate3d(0, 0, 0); /* 强制开启3D加速 */
+  will-change: transform;
 }
 
 .song-header {
@@ -1261,25 +1264,26 @@ header h1 {
   align-items: center;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 2px;
+  border-radius: 24px;
+  padding: 2px 6px; /* 增加左右内边距，使药丸两端排版更舒展 */
   margin: 0 8px;
+  gap: 8px; /* 在 A- 和 A+ 之间增加物理空隙，极大地防止误触 */
 }
 
 .font-btn {
   background: transparent;
-  width: 36px;
-  height: 32px;
+  width: 50px; /* 宽度从36px调大至50px，极大增加触控宽度 */
+  height: 40px; /* 高度从32px调大至40px，提供极其舒适的手机触屏点击体验 */
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   color: var(--text-primary);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px; /* 字体大一号，更易识别 */
   font-weight: 600;
   transition: background 0.2s, transform 0.1s;
-  border-radius: 16px;
+  border-radius: 22px;
 }
 
 .font-btn:hover {
@@ -1293,7 +1297,7 @@ header h1 {
 
 .font-divider {
   width: 1px;
-  height: 14px;
+  height: 18px; /* 高度从14px调大至18px以匹配整体比例 */
   background: rgba(255, 255, 255, 0.12);
 }
 
